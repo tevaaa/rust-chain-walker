@@ -1,14 +1,17 @@
 [package]
 name = "rpc_surgeon"
 version = "0.1.0"
-edition = "2026"
+edition = "2024"
 
-[depreqwest endencies]
+[dependencies]
 reqwest = { workspace = true}
 serde = { workspace = true}
 serde_json = { workspace = true}
 hex = { workspace = true}
 sha3 = { workspace = true}
+tokio = { workspace = true}
+anyhow = { workspace = true}
+dotenvy = {workspace = true}
 
 [lints]
 workspace = true

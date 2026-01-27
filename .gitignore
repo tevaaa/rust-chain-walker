@@ -1,4 +1,7 @@
-/target
 **/*.rs.bk
 Cargo.lock
 .env
+debug
+target
+*.pdb
+**/mutants.out*/

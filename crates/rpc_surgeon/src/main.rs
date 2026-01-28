@@ -1,13 +1,13 @@
 use anyhow::{Context, Result};
 use clap::Parser;
-use rpc_surgeon::{get_storage_at, derive_mapping_slot};
+use rpc_surgeon::{derive_mapping_slot, get_storage_at};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 struct Args {
     #[arg(short, long)]
     contract: String,
-    
+
     #[arg(short, long)]
     owner: String,
 
@@ -18,13 +18,13 @@ struct Args {
     rpc: Option<String>,
 }
 
-
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
 
     dotenvy::dotenv().ok();
-    let rpc_url = args.rpc
+    let rpc_url = args
+        .rpc
         .or_else(|| std::env::var("RPC_URL").ok())
         .context("RPC_URL must be provided via --rpc or .env file")?;
 
@@ -41,11 +41,10 @@ async fn main() -> Result<()> {
     let raw_balance = get_storage_at(&rpc_url, &args.contract, &target_slot).await?;
     println!("Raw value: {}", raw_balance);
 
-
     let clean = raw_balance.trim_start_matches("0x");
-        if !clean.is_empty() && clean != "0" {
-            let val = u128::from_str_radix(clean, 16).unwrap_or(0);
-            println!("Decimal value: {}", val);
-        }
-        Ok(())
+    if !clean.is_empty() && clean != "0" {
+        let val = u128::from_str_radix(clean, 16).unwrap_or(0);
+        println!("Decimal value: {}", val);
+    }
+    Ok(())
 }

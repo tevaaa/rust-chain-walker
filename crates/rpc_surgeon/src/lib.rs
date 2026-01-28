@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
-use sha3::{Digest, Keccak256};
 use serde::{Deserialize, Serialize};
+use sha3::{Digest, Keccak256};
 
 #[derive(Serialize)]
 struct JsonRpcRequest {
@@ -60,8 +60,6 @@ pub fn derive_mapping_slot(user_address: &str, mapping_slot: u64) -> Result<Stri
     Ok(format!("0x{}", hex::encode(result)))
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -69,9 +67,12 @@ mod tests {
     #[test]
     fn test_weth_balance_slot() -> Result<()> {
         // Binance Wallet
-        let holder = "0xF977814e90dA44bFA03b6295A0616a897441aceC"; 
+        let holder = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
         let slot = derive_mapping_slot(holder, 3)?;
-        assert_eq!(slot, "0x9cca97fb08ee88532e0983a3a051466c5df908292b6899f3cdc163eb9c0b22ba");
+        assert_eq!(
+            slot,
+            "0x9cca97fb08ee88532e0983a3a051466c5df908292b6899f3cdc163eb9c0b22ba"
+        );
         Ok(())
     }
 }

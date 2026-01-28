@@ -1,0 +1,19 @@
+[package]
+name = "event_horizon"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+dotenvy = { workspace = true }
+hex = { workspace = true }
+tokio-tungstenite = { workspace = true }
+futures-util = { workspace = true}
+
+rpc_surgeon = { path = "../rpc_surgeon" }
+
+[lints]
+workspace = true

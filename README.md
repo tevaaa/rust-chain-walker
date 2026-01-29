@@ -10,7 +10,7 @@
 | [**rpc_surgeon**](./crates/rpc_surgeon) | Direct storage slot analysis & mapping derivation. | ✅ Stable |
 | [**event_horizon**](./crates/event_horizon) | Real-time indexing via asynchronous WebSockets. | ✅ Stable |
 | [**flashbots_sniper**](./crates/flashbots_sniper) | Bypass the public mempool | 🛠  In progress |
-| [**evm_disassembler**](./crates/flashbots_sniper) | Dissect bytecode into human-readable Assenbly | ⏳ Planned |
+| [**evm_disassembler**](./crates/flashbots_sniper) | Dissect bytecode into human-readable Assembly | ⏳ Planned |
 
 
 ---

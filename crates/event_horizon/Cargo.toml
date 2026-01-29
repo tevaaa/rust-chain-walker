@@ -12,8 +12,7 @@ dotenvy = { workspace = true }
 hex = { workspace = true }
 tokio-tungstenite = { workspace = true }
 futures-util = { workspace = true}
-
-rpc_surgeon = { path = "../rpc_surgeon" }
+clap = {workspace = true}
 
 [lints]
 workspace = true

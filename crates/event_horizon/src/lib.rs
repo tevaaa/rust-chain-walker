@@ -130,4 +130,90 @@ mod tests {
         assert_eq!(event.amount_raw, 100_000_000); // 100 USDC
         Ok(())
     }
+    
+    #[test]
+     fn test_decode_hex_to_u128_valid() {
+        assert_eq!(decode_hex_to_u128("0x64"), 100);
+        assert_eq!(decode_hex_to_u128("0xFF"), 255);
+        assert_eq!(decode_hex_to_u128("0x0"), 0);
+        assert_eq!(decode_hex_to_u128("0x"), 0);
+    }
+
+    #[test]
+    fn test_parse_transfer_event_insufficient_topics() {
+        let mock_json = r#"{
+            "params": {
+                "result": {
+                    "data": "0x0000000000000000000000000000000000000000000000000000000005f5e100",
+                    "topics": [
+                        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+                    ]
+                }
+            }
+        }"#;
+
+        let event = process_raw_message(mock_json);
+        assert!(event.is_none(), "Should return None when topics.len() < 3");
+    }
+
+    #[test]
+    fn test_parse_transfer_event_empty_topics() {
+        let mock_json = r#"{
+            "params": {
+                "result": {
+                    "data": "0x0000000000000000000000000000000000000000000000000000000005f5e100",
+                    "topics": []
+                }
+            }
+        }"#;
+
+        let event = process_raw_message(mock_json);
+        assert!(event.is_none());
+    }
+
+    #[test]
+    fn test_parse_transfer_event_malformed_json() {
+        let malformed = r#"{ "params": { "result": { "data": invalid } } }"#;
+        let event = process_raw_message(malformed);
+        assert!(event.is_none());
+    }
+
+    #[test]
+    fn test_parse_transfer_event_missing_fields() {
+        let incomplete_json = r#"{
+            "params": {
+                "result": {
+                    "topics": [
+                        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                        "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                        "0x000000000000000000000000f977814e90da44bfa03b6295a0616a897441acec"
+                    ]
+                }
+            }
+        }"#;
+
+        let event = process_raw_message(incomplete_json);
+        assert!(event.is_none(), "Should return None when 'data' field is missing");
+    }
+    #[test]
+    fn test_transfer_event_addresses_lowercase() {
+        let mock_json = r#"{
+            "params": {
+                "result": {
+                    "data": "0x0000000000000000000000000000000000000000000000000000000005f5e100",
+                    "topics": [
+                        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                        "0x000000000000000000000000aabbccddaabbccddaabbccddaabbccddaabbccdd",
+                        "0x000000000000000000000000eeff00aaeeff00aaeeff00aaeeff00aaeeff00aa"
+                    ]
+                }
+            }
+        }"#;
+
+    let event = process_raw_message(mock_json).expect("Should parse");
+        assert_eq!(event.from.to_lowercase(), "0xaabbccddaabbccddaabbccddaabbccddaabbccdd");
+        assert_eq!(event.to.to_lowercase(), "0xeeff00aaeeff00aaeeff00aaeeff00aaeeff00aa");
+    }
+
+
 }

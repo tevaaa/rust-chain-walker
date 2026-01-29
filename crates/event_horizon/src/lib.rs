@@ -96,7 +96,10 @@ pub async fn run_indexer(wss_url: &str, target: &str) -> Result<()> {
         {
             let precision = if decimals <= 6 { 2 } else { 8 };
             let amount = transfer.amount_formatted(decimals);
-            println!("💸 {} -> {} | {:.*} 🪙", transfer.from, transfer.to, precision, amount);
+            println!(
+                "💸 {} -> {} | {:.*} 🪙",
+                transfer.from, transfer.to, precision, amount
+            );
         }
     }
     Err(anyhow::anyhow!("Stream closed"))
@@ -130,9 +133,9 @@ mod tests {
         assert_eq!(event.amount_raw, 100_000_000); // 100 USDC
         Ok(())
     }
-    
+
     #[test]
-     fn test_decode_hex_to_u128_valid() {
+    fn test_decode_hex_to_u128_valid() {
         assert_eq!(decode_hex_to_u128("0x64"), 100);
         assert_eq!(decode_hex_to_u128("0xFF"), 255);
         assert_eq!(decode_hex_to_u128("0x0"), 0);
@@ -193,7 +196,10 @@ mod tests {
         }"#;
 
         let event = process_raw_message(incomplete_json);
-        assert!(event.is_none(), "Should return None when 'data' field is missing");
+        assert!(
+            event.is_none(),
+            "Should return None when 'data' field is missing"
+        );
     }
     #[test]
     fn test_transfer_event_addresses_lowercase() {
@@ -210,10 +216,14 @@ mod tests {
             }
         }"#;
 
-    let event = process_raw_message(mock_json).expect("Should parse");
-        assert_eq!(event.from.to_lowercase(), "0xaabbccddaabbccddaabbccddaabbccddaabbccdd");
-        assert_eq!(event.to.to_lowercase(), "0xeeff00aaeeff00aaeeff00aaeeff00aaeeff00aa");
+        let event = process_raw_message(mock_json).expect("Should parse");
+        assert_eq!(
+            event.from.to_lowercase(),
+            "0xaabbccddaabbccddaabbccddaabbccddaabbccdd"
+        );
+        assert_eq!(
+            event.to.to_lowercase(),
+            "0xeeff00aaeeff00aaeeff00aaeeff00aaeeff00aa"
+        );
     }
-
-
 }

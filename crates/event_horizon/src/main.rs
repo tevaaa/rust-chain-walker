@@ -24,7 +24,8 @@ async fn main() -> Result<()> {
             eprintln!("Connection lost: {}. Retrying in {} seconds...", e, sec);
         }
         sleep(Duration::from_secs(sec)).await;
-        if sec < 20 { sec += 1 };
+        if sec < 20 {
+            sec += 1
+        };
     }
 }
-

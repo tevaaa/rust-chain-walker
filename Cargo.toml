@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/event_horizon",
+members = ["crates/event_horizon", "crates/flashbots_arbitrage",
     "crates/rpc_surgeon",
 ]
 

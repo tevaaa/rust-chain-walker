@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
+members = ["crates/event_horizon",
     "crates/rpc_surgeon",
 ]
 
@@ -14,6 +14,8 @@ sha3 = "0.10"
 anyhow = "1.0"
 dotenvy = "0.15"
 clap = { version = "4.4", features = ["derive"] }
+tokio-tungstenite = { version = "0.21", features = ["rustls-tls-native-roots"] }
+futures-util = "0.3"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

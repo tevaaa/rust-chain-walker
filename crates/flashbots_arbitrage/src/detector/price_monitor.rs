@@ -8,6 +8,7 @@ const UNI_V2_POOL: &str = "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc";
 const SUSHI_V2_POOL: &str = "0x397FF1542f962076d0BFE58eA045FfA2d347ACa0";
 const SYNC_EVENT: &str = "0x1c411e9a96e071241c2f21f7726b17ae89e3cab4c78be50e062b03a9fffbbad1";
 
+#[derive(Default)]
 pub struct PriceMonitor {
     uni_reserves: (u128, u128),
     sushi_reserves: (u128, u128),
@@ -22,9 +23,8 @@ impl PriceMonitor {
             sync_count: 0,
         }
     }
-
     /// Initialize monitor by fetching current reserves
-    pub async fn initialize(http_rpc: &str) -> Result<Self> {
+    pub async fn initialize(&mut self, http_rpc: &str) -> Result<()> {
         println!("🔄 Fetching initial reserves...\n");
 
         let (uni_usdc, uni_weth) = helper::fetch_reserves(http_rpc, UNI_V2_POOL)
@@ -65,11 +65,9 @@ impl PriceMonitor {
             spread_abs, spread_bps
         );
 
-        Ok(Self {
-            uni_reserves: (uni_usdc, uni_weth),
-            sushi_reserves: (sushi_usdc, sushi_weth),
-            sync_count: 0,
-        })
+        self.uni_reserves = (uni_usdc, uni_weth);
+        self.sushi_reserves = (sushi_usdc, sushi_weth);
+        Ok(())
     }
 
     fn calculate_price(reserves: (u128, u128)) -> f64 {
@@ -127,7 +125,7 @@ impl PriceMonitor {
             reserves.0 / 1_000_000,
             reserves.1 / 1_000_000_000_000_000_000
         );
-        println!("   Price: {:.2} USDC/WETH\n", price);
+        println!("   Price: {:.2} USDC/WETH", price);
 
         // Check for arbitrage opportunity
         self.check_arbitrage();
@@ -143,6 +141,10 @@ impl PriceMonitor {
         let spread_abs = (price_uni - price_sushi).abs();
         let price_avg = (price_uni + price_sushi) / 2.0;
         let spread_bps = (spread_abs / price_avg) * 10_000.0;
+        println!(
+            "New spread: ABS: {:.2} | BPS: {:.1}\n",
+            spread_abs, spread_bps
+        );
 
         if spread_bps > THRESHOLD_BPS {
             let (buy_dex, buy_price, sell_dex, sell_price) = if price_uni < price_sushi {
@@ -161,7 +163,7 @@ impl PriceMonitor {
 
     /// Start listening to WebSocket events
     pub async fn listen(&mut self, wss_url: &str, http_rpc: &str) -> Result<()> {
-        Self::initialize(http_rpc).await?;
+        Self::initialize(self, http_rpc).await?;
 
         // Connect to WebSockets
         let (uni_ws, _) = connect_async(wss_url)

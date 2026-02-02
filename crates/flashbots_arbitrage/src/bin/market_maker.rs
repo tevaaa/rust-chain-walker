@@ -269,11 +269,6 @@ async fn main() -> Result<()> {
             "Sushiswap"
         };
 
-        println!(
-            "✨ [{}] {:>5.4} {}  ➡️  {:<10}",
-            timestamp, display_amount, token_name, pool_name
-        );
-
         let (u, w) = fetch_reserves(ANVIL_RPC, pool_to_hit).await?;
 
         if is_weth {
@@ -283,6 +278,11 @@ async fn main() -> Result<()> {
             let out = calculate_weth_out(amount, u, w);
             send_swap_bundle(pool_to_hit, USDC_ADDRESS, amount, 0, out).await?;
         }
+
+        println!(
+            "✨ [{}] {:>5.4} {}  ➡️  {:<10}",
+            timestamp, display_amount, token_name, pool_name
+        );
 
         tokio::time::sleep(tokio::time::Duration::from_secs(wait_time)).await;
     }

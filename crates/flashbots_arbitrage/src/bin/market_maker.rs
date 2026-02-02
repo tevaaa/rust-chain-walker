@@ -243,7 +243,7 @@ async fn main() -> Result<()> {
                 (s, amt)
             }
             MarketMode::Extreme => {
-                let s = rng.random_range(0..2);
+                let s = rng.random_range(1..2);
                 let amt = if is_weth {
                     rng.random_range(1e17 as u128..2e18 as u128)
                 } else {

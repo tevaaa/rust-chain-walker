@@ -130,10 +130,9 @@ impl PriceMonitor {
         // Check for arbitrage opportunity
         self.check_arbitrage();
     }
-
     // Check if arbitrage opportunity exists
     fn check_arbitrage(&self) {
-        const THRESHOLD_BPS: f64 = 50.0; // 0.5% minimum spread
+        const THRESHOLD_BPS: f64 = 20.0;
 
         let price_uni = Self::calculate_price(self.uni_reserves);
         let price_sushi = Self::calculate_price(self.sushi_reserves);
@@ -141,23 +140,40 @@ impl PriceMonitor {
         let spread_abs = (price_uni - price_sushi).abs();
         let price_avg = (price_uni + price_sushi) / 2.0;
         let spread_bps = (spread_abs / price_avg) * 10_000.0;
-        println!(
-            "New spread: ABS: {:.2} | BPS: {:.1}\n",
-            spread_abs, spread_bps
-        );
+
+        let (res_buy, res_sell, name_buy, name_sell) = if price_uni < price_sushi {
+            (
+                self.uni_reserves,
+                self.sushi_reserves,
+                "Uniswap",
+                "Sushiswap",
+            )
+        } else {
+            (
+                self.sushi_reserves,
+                self.uni_reserves,
+                "Sushiswap",
+                "Uniswap",
+            )
+        };
 
         if spread_bps > THRESHOLD_BPS {
-            let (buy_dex, buy_price, sell_dex, sell_price) = if price_uni < price_sushi {
-                ("Uniswap", price_uni, "Sushiswap", price_sushi)
+            if let Some(arb) =
+                optimizer::calculate_optimal_arbitrage(res_buy, res_sell, name_buy, name_sell)
+            {
+                println!("\n🚀 [PROFITABLE ARBITRAGE FOUND]");
+                println!("   🔄 Path: {} ➡️  {}", arb.buy_pool, arb.sell_pool);
+                println!("   📦 Optimal Input:  {:.4} WETH", arb.optimal_amount_weth);
+                println!("   💰 Gross Profit:   {:.2} USDC", arb.gross_profit_usdc);
+                println!("   ⛽ Gas Cost (est): {:.2} USDC", arb.gas_cost_usdc);
+                println!("   ✨ NET PROFIT:     {:.2} USDC", arb.net_profit_usdc);
+                println!("   ------------------------------------\n");
             } else {
-                ("Sushiswap", price_sushi, "Uniswap", price_uni)
-            };
-
-            println!("\n🚨 ARBITRAGE DETECTED!");
-            println!("   Buy:  {} @ {:.2} USDC/WETH", buy_dex, buy_price);
-            println!("   Sell: {} @ {:.2} USDC/WETH", sell_dex, sell_price);
-            println!("   Spread: {:.2} USDC ({:.1} bps)", spread_abs, spread_bps);
-            println!("   Theoretical profit (1 WETH): ${:.2}\n", spread_abs);
+                println!(
+                    "ℹ️ Spread detected ({:.1} bps) but not profitable after gas/slippage.",
+                    spread_bps
+                );
+            }
         }
     }
 

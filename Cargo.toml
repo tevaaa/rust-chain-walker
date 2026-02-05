@@ -1,7 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["crates/event_horizon",
-    "crates/rpc_surgeon",
+members = [
+	"crates/event_horizon",
+	"crates/flashbots_arbitrage",
+  "crates/rpc_surgeon",
 ]
 
 [workspace.dependencies]

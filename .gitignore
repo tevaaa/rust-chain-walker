@@ -5,3 +5,4 @@ debug
 target
 *.pdb
 **/mutants.out*/
+**/*/notes.md

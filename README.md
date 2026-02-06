@@ -47,7 +47,7 @@ $$a_{optimal} = \sqrt{\gamma R_1 R_2 \frac{p_2}{p_1}} - R_1$$
 
 ### 🚀 Usage (Simulation Mode)
 1. **Fork Mainnet**: `anvil --fork-url "HTTPS_RPC_URL"`
-2. **Start Monitor**: `cargo run -p flashbots_arbitrage`
+2. **Start Monitor**: `cargo run --bin flashbots_arbitrage`
 3. **Trigger Arb**: `cargo run --bin market_maker -- --mode extreme`
 
 ### ⚠️ Educational Purpose

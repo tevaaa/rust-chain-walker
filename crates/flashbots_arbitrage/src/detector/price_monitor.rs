@@ -1,4 +1,5 @@
 use super::helper;
+use crate::strategy::optimizer;
 use anyhow::{Context, Result};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use serde_json::json;
@@ -132,7 +133,7 @@ impl PriceMonitor {
     }
     // Check if arbitrage opportunity exists
     fn check_arbitrage(&self) {
-        const THRESHOLD_BPS: f64 = 20.0;
+        const THRESHOLD_BPS: f64 = 50.0;
 
         let price_uni = Self::calculate_price(self.uni_reserves);
         let price_sushi = Self::calculate_price(self.sushi_reserves);

@@ -1,5 +1,3 @@
-## Technical Decisions
-
 ### Reserve Tracking: Evolution of Approach
 
 **Initial Implementation (Swap Events):**
@@ -31,7 +29,3 @@ Benefits:
 - ✅ Single source of truth (no drift)
 - ✅ Captures all state changes (Swap + Mint + Burn)
 - ✅ Simpler code (direct state update)
-
-**Why this matters for security:** Understanding both methods reveals 
-how protocols can have state inconsistencies if reserves aren't 
-properly synchronized—a common vulnerability pattern in DeFi exploits.

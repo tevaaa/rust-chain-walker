@@ -9,9 +9,7 @@
 | :--- | :--- | :--- |
 | [**rpc_surgeon**](./crates/rpc_surgeon) | Direct storage slot analysis & mapping derivation. | ✅ Stable |
 | [**event_horizon**](./crates/event_horizon) | Real-time indexing via asynchronous WebSockets. | ✅ Stable |
-| [**flashbots_sniper**](./crates/flashbots_sniper) | Bypass the public mempool | 🛠  In progress |
-| [**evm_disassembler**](./crates/flashbots_sniper) | Dissect bytecode into human-readable Assembly | ⏳ Planned |
-
+| [**v1_legacy_arb**](./crates/flashbots_arbitrage) | Educational MEV engine (Proof-of-Depth). | 📦 Archived |
 
 ---
 # Rpc Surgeon
@@ -35,49 +33,23 @@ $$slot = keccak256(h(k) + p)$$
 1. Add your WSS provider to a `.env` file `WSS_URL = wss://..../KEY` 
 2. Run example monitor WETH: `cargo run -p event_horizon -- --target 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`  
 
-# 🔥 Flashbots Arbitrage Engine
+# 🔥 Flashbots Arbitrage (Legacy V1)
 
-> Educational MEV bot demonstrating Flashbots bundle construction and optimal arbitrage calculation.
+This module serves as a **Post-Mortem** of my initial MEV research. It focuses on the "No-Library" approach to understand EVM transactions in depth.
 
-## 🎯 What This Demonstrates
+### 🧠 Core Engineering Principles:
+- **Zero-Dependency ABI**: Manual construction of calldata to bypass the overhead of standard libraries.
+- **Precision Analysis**: Implemented a Ternary Search algorithm for profit maximization.
 
-- **MEV Supply Chain**: Understanding of PBS (Proposer-Builder Separation)
-- **Cryptography**: Raw ECDSA transaction signing (EIP-1559)
-- **Math Finance**: Optimal swap amount calculation (profit maximization)
-- **Systems Engineering**: Event-driven architecture with simulation-first approach
+### 📐 The Math (V2 Constant Product)
+Optimal swap amount calculated via:
+$$a_{optimal} = \sqrt{\gamma R_1 R_2 \frac{p_2}{p_1}} - R_1$$
 
-## 🏗 Architecture
-```
-Event Detection → Profit Calculation → Bundle Simulation → Execution
-     (WS)              (Math)            (eth_callBundle)   (Flashbots)
-```
+### 🚀 Usage (Simulation Mode)
+1. **Fork Mainnet**: `anvil --fork-url "HTTPS_RPC_URL"`
+2. **Start Monitor**: `cargo run -p flashbots_arbitrage`
+3. **Trigger Arb**: `cargo run --bin market_maker -- --mode extreme`
 
-## 📐 The Math
+### ⚠️ Educational Purpose
+This is an educational project. Production-grade MEV requires < 10ms end-to-end latency, institutional capital, and private RPC nodes.
 
-To maximize profit, we calculate the optimal swap amount using:
-```
-a_optimal = sqrt(γ * R1 * R2 * (p2/p1)) - R1
-```
-
-Where:
-- `γ = (1 - fee)²` (accounting for fees on both swaps)
-- `R1, R2` are pool reserves
-- `p1, p2` are prices on each DEX
-
-## 🚀 Usage
-```bash
-# Simulation mode (default, no real transactions)
-cargo run -p flashbots_arbitrage -- --simulate
-
-# Live mode (requires capital + private key)
-cargo run -p flashbots_arbitrage -- --live --key $PRIVATE_KEY
-```
-
-## ⚠️ Educational Purpose
-
-This is a for fun project. Real MEV profitability requires:
-- Private RPC nodes (< 10ms latency)
-- Significant capital (> 10 ETH)
-- Advanced strategies (multi-hop, JIT liquidity, etc.)
-
-## 📊 Simulated Results

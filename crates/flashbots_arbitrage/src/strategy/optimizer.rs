@@ -7,6 +7,9 @@ pub struct ArbitrageOpportunity {
     pub sell_pool: &'static str,
 }
 
+// NOTE: Using f64 for simulation. In production, U256 (Fixed-point)
+// is mandatory to avoid wei-level precision loss.
+
 /// Simulates a single arbitrage execution
 fn simulate_arbitrage(usdc_in: f64, r1_usdc: f64, r1_weth: f64, r2_usdc: f64, r2_weth: f64) -> f64 {
     const FEE: f64 = 0.997;
@@ -36,17 +39,14 @@ pub fn calculate_optimal_arbitrage(
 
     const GAS_COST: f64 = 15.0;
 
-    // Calculate prices
     let p_buy = r1_usdc / r1_weth;
     let p_sell = r2_usdc / r2_weth;
 
-    // Sanity check: must have price difference
     if p_buy >= p_sell {
         return None;
     }
 
     // Binary search bounds
-    // Start with very small amount, max 10% of smaller pool's USDC
     let min_pool_usdc = r1_usdc.min(r2_usdc);
     let mut low = 10.0; // Start at $10
     let mut high = min_pool_usdc * 0.1; // Max 10% of pool
@@ -55,8 +55,7 @@ pub fn calculate_optimal_arbitrage(
     let mut best_profit = 0.0;
 
     // Binary search for maximum profit
-    for _ in 0..100 {
-        // 100 iterations = very precise
+    for _ in 0..50 {
         let mid1 = low + (high - low) / 3.0;
         let mid2 = high - (high - low) / 3.0;
 

@@ -34,4 +34,9 @@ jobs:
       run: cargo clippy --workspace -- -D warnings
 
     - name: Run Tests
-      run: cargo test --workspace
+      run: cargo test --workspace -- --nocapture
+      env:
+        RUST_BACKTRACE: 1
+        HTTP_URL: ${{ secrets.HTTP_URL }}
+        RPC_URL: ${{ secrets.RPC_URL }}
+        WSS_URL: ${{ secrets.WSS_URL }}

@@ -8,6 +8,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RPC_URL: ${{ secrets.RPC_URL }}
+  WSS_URL: ${{ secrets.WSS_URL }}
+  HTTP_URL: ${{ secrets.HTTP_URL }}
 
 jobs:
   build_and_test:

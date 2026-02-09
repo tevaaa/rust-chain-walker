@@ -79,8 +79,7 @@ mod tests {
     async fn test_fetch_uni_reserves() -> Result<()> {
         dotenvy::dotenv().ok();
 
-        let http_rpc = std::env::var("HTTP_URL")
-            .expect("HTTP_URL")
+        let http_rpc = std::env::var("HTTP_URL").expect("HTTP_URL");
 
         let uni_pool = "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc";
 

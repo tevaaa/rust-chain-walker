@@ -8,9 +8,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  RPC_URL: ${{ secrets.RPC_URL }}
-  WSS_URL: ${{ secrets.WSS_URL }}
-  HTTP_URL: ${{ secrets.HTTP_URL }}
 
 jobs:
   build_and_test:
@@ -18,6 +15,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Debug Secrets Availability
+      run: |
+        echo "=== Secret Status ==="
+        echo "HTTP_URL secret exists: ${{ secrets.HTTP_URL != '' }}"
+        echo "RPC_URL secret exists: ${{ secrets.RPC_URL != '' }}"
+        echo "WSS_URL secret exists: ${{ secrets.WSS_URL != '' }}"
+        echo ""
+        echo "=== Environment Variables ==="
+        echo "HTTP_URL env length: ${#HTTP_URL}"
+        echo "RPC_URL env length: ${#RPC_URL}"
+        echo "WSS_URL env length: ${#WSS_URL}"
+        echo ""
+        echo "=== All Environment Variables Starting with 'HTTP' or 'RPC' ==="
+        env | grep -E '^(HTTP|RPC|WSS)' || echo "None found"
+      env:
+        HTTP_URL: ${{ secrets.HTTP_URL }}
+        RPC_URL: ${{ secrets.RPC_URL }}
+        WSS_URL: ${{ secrets.WSS_URL }}
 
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
@@ -34,4 +50,9 @@ jobs:
       run: cargo clippy --workspace -- -D warnings
 
     - name: Run Tests
-      run: cargo test --workspace
+      run: cargo test --workspace -- --nocapture
+      env:
+        RUST_BACKTRACE: 1
+        HTTP_URL: ${{ secrets.HTTP_URL }}
+        RPC_URL: ${{ secrets.RPC_URL }}
+        WSS_URL: ${{ secrets.WSS_URL }}
